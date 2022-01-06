@@ -6,6 +6,7 @@ set(PROJECT_VESRION 0.0.${PATCH_VERSION})
 project(helloworld VERSION ${PROJECT_VESRION})
 
 option(WITH_BOOST_TEST "Whether to build Boost test" ON)
+option(WITH_GOOGLE_TEST "Whether to build Google tets" ON)
 
 configure_file(version.h.in version.h)
 
@@ -28,21 +29,36 @@ target_link_libraries(helloworld_cli PRIVATE
 if(WITH_BOOST_TEST)
     
     find_package(Boost COMPONENTS unit_test_framework REQUIRED)
-    add_executable(test_version test_version.cpp)
+    add_executable(boost_test_version test_version.cpp)
 
 
-    set_target_properties(test_version PROPERTIES
-        CXX_STANDARD 14
+    set_target_properties(boost_test_version PROPERTIES
+        CXX_STANDARD 17
         CXX_STANDARD_REQUIRED ON
     )
 
-    set_target_properties(test_version PROPERTIES
+    set_target_properties(boost_test_version PROPERTIES
         COMPILE_DEFINITIONS BOOST_TEST_DYN_LINK
         INCLUDE_DIRECTORIES ${Boost_INCLUDE_DIR}
     )
 
-    target_link_libraries(test_version
+    target_link_libraries(boost_test_version
         ${Boost_LIBRARIES}
+        helloworld
+    )
+endif()
+
+if(WITH_GOOGLE_TEST)
+    add_subdirectory(./googletest)
+    add_executable(google_test_version test_version_g.cpp)
+
+    set_target_properties(google_test_version PROPERTIES
+        CXX_STANDARD 17
+        CXX_STANDARD_REQUIRED ON
+    )
+
+    target_link_libraries(google_test_version 
+        gtest_main 
         helloworld
     )
 endif()
@@ -55,7 +71,11 @@ if (MSVC)
         /W4
     )
     if(WITH_BOOST_TEST)
-        target_compile_options(test_version PRIVATE
+        target_compile_options(boost_test_version PRIVATE
+            /W4
+    )
+    elseif(WITH_GOOGLE_TEST)
+        target_compile_options(google_test_version PRIVATE
             /W4
         )
     endif()
@@ -67,8 +87,12 @@ else ()
         -Wall -Wextra -pedantic -Werror
     )
     if(WITH_BOOST_TEST)
-        target_compile_options(test_version PRIVATE
+        target_compile_options(boost_test_version PRIVATE
             -Wall -Wextra -pedantic -Werror
+    )
+    elseif(WITH_GOOGLE_TEST)
+        target_compile_options(google_test_version PRIVATE
+        -Wall -Wextra -pedantic -Werror
         )
     endif()
 endif()
@@ -84,5 +108,11 @@ include(CPack)
 
 if(WITH_BOOST_TEST)
     enable_testing()
-    add_test(test_version test_version)
+    add_test(test_version_boost test_version)
+endif()
+
+if(WITH_GOOGLE_TEST)
+    enable_testing()
+    include(GoogleTest)
+    gtest_discover_tests(google_test_version)
 endif()
