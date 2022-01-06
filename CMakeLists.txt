@@ -29,20 +29,20 @@ target_link_libraries(helloworld_cli PRIVATE
 if(WITH_BOOST_TEST)
     
     find_package(Boost COMPONENTS unit_test_framework REQUIRED)
-    add_executable(boost_test_version test_version.cpp)
+    add_executable(test_version test_version.cpp)
 
 
-    set_target_properties(boost_test_version PROPERTIES
+    set_target_properties(test_version PROPERTIES
         CXX_STANDARD 17
         CXX_STANDARD_REQUIRED ON
     )
 
-    set_target_properties(boost_test_version PROPERTIES
+    set_target_properties(test_version PROPERTIES
         COMPILE_DEFINITIONS BOOST_TEST_DYN_LINK
         INCLUDE_DIRECTORIES ${Boost_INCLUDE_DIR}
     )
 
-    target_link_libraries(boost_test_version
+    target_link_libraries(test_version
         ${Boost_LIBRARIES}
         helloworld
     )
@@ -71,7 +71,7 @@ if (MSVC)
         /W4
     )
     if(WITH_BOOST_TEST)
-        target_compile_options(boost_test_version PRIVATE
+        target_compile_options(test_version PRIVATE
             /W4
     )
     elseif(WITH_GOOGLE_TEST)
@@ -87,7 +87,7 @@ else ()
         -Wall -Wextra -pedantic -Werror
     )
     if(WITH_BOOST_TEST)
-        target_compile_options(boost_test_version PRIVATE
+        target_compile_options(test_version PRIVATE
             -Wall -Wextra -pedantic -Werror
     )
     elseif(WITH_GOOGLE_TEST)
@@ -108,7 +108,7 @@ include(CPack)
 
 if(WITH_BOOST_TEST)
     enable_testing()
-    add_test(test_version_boost test_version)
+    add_test(test_version test_version)
 endif()
 
 if(WITH_GOOGLE_TEST)
