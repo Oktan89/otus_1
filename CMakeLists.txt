@@ -49,7 +49,7 @@ if(WITH_BOOST_TEST)
 endif()
 
 if(WITH_GOOGLE_TEST)
-    add_subdirectory(./googletest)
+    add_subdirectory(./googletest EXCLUDE_FROM_ALL)
     add_executable(google_test_version test_version_g.cpp)
 
     set_target_properties(google_test_version PROPERTIES
