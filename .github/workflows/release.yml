@@ -22,6 +22,7 @@ jobs:
       - name: Set file name
         id: run_ls
         run: echo ::set-output name=FILE_NAME::$(ls | grep *.deb)
+        run: dpkg -c ./${{outputs.FILE_NAME}}
       - name: Create Release
         if: ${{github.ref_type == 'tag'}}
         id: create_release
